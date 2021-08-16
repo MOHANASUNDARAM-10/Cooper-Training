@@ -10,6 +10,15 @@ class login:
         details=mycursor.fetchall()
         if details[0][0]==self.user_id and details[0][1]==self.password:
             print("login success")
+    def new_user(self):
+        user_id=str(input("enter the user_id: "))
+        password=str(input("enter the password: "))
+        email_id=str(input("enter the email_id: "))
+        phonenumber=int(input("enter the phone number: "))
+        address=str(input("enter the address: "))
+        mycursor.execute('insert into login_details values(%s,%s,%s,%s,%s)',(user_id,password,email_id,phonenumber,address,))
+        mydb.commit()
+        print("registration success")
 class service_details:
     def __init__(self,city):
         self.city=city
@@ -53,10 +62,17 @@ class completion_details:
 
 if __name__=='__main__':
     print("welcome to our home application")
-    user_id=str(input("enter the user_id: "))
-    password=str(input("enter the password: "))
-    check=login(user_id,password)
-    check.login_check()
+    checkuser=str(input('print yes if existing user else print no: '))
+    if checkuser=='yes':
+        user_id=str(input("enter the user_id: "))
+        password=str(input("enter the password: "))
+        check=login(user_id,password)
+        check.login_check()
+    else:
+        user_id=str(input("enter the user_id: "))
+        password=str(input("enter the password: "))
+        check=login(user_id,password)
+        check.new_user()
     while True:
         condition=str(input('do you want to book services: '))
         if condition=='yes':
