@@ -1,0 +1,78 @@
+import mysql.connector
+mydb=mysql.connector.connect(host='localhost',user='root',password='1999',database='service')
+mycursor=mydb.cursor()
+class login:
+    def __init__(self,user_id,password):
+        self.user_id=user_id
+        self.password=password
+    def login_check(self):
+        mycursor.execute('select user_id,password from login_details where user_id like %s',(self.user_id,))
+        details=mycursor.fetchall()
+        if details[0][0]==self.user_id and details[0][1]==self.password:
+            print("login success")
+class service_details:
+    def __init__(self,city):
+        self.city=city
+
+    def show(self):
+        mycursor.execute('select * from service_details where city like %s',(self.city,))
+        det=mycursor.fetchall()
+        for i in det:
+            print('service_id:',i[0],'type_of_service:',i[2],'availability:',i[3],'fees:',i[4])
+class selecting_provider:
+    def __init__(self,service_id):
+        self.service_id=service_id
+
+    
+    def select(self):
+        provider=str(input("do you want to see service_provider details: "))
+        if provider=='yes':
+            mycursor.execute('select * from provider_details where provider_id like %s',(self.service_id,))
+            details=mycursor.fetchall()
+            for i in details:
+                print('provider_id:',i[0],'provider_name:',i[1],'provider_phnno:',i[2],'provider_experience:',i[3],'provider_ratings:',i[4])
+class booking_details:
+    def __init__(self,login_id,service_id):
+        self.login_id=login_id
+        self.service_id=service_id
+    def booking(self):
+        check=str(input("do you want to book the above service provider: "))
+        booking_id=1
+        if check=='yes':
+            mycursor.execute('insert into booking_details(booking_id,login_id,service_id,booking_status) values(%s,%s,%s,%s)',(booking_id,self.login_id,self.service_id,'success',))
+            mydb.commit()
+            booking_id+=1
+class completion_details:
+    def review_details(self):
+        review=str(input('please give review for our service provider: '))
+        ratings=(str(input('please give ratings for our service provider out of 10: ')))
+        mycursor.execute('insert into service_completion values(%s,%s,%s,%s,%s)',(1,1,review,ratings,'success',))
+        mydb.commit()
+
+            
+
+if __name__=='__main__':
+    print("welcome to our home application")
+    user_id=str(input("enter the user_id: "))
+    password=str(input("enter the password: "))
+    check=login(user_id,password)
+    check.login_check()
+    while True:
+        condition=str(input('do you want to book services: '))
+        if condition=='yes':
+            city=str(input(" enter the city to see the types of services "))
+            check_service=service_details(city)
+            check_service.show()
+            print("If you want to see provider_details please select the type of service you want")
+            service_name=str(input("enter the service you want: "))
+            service_id=str(input("enter the service_id: "))
+            choose_service=selecting_provider(service_id)
+            choose_service.select()
+            check_booking=booking_details(user_id,service_id)
+            check_booking.booking()
+        else:
+            break
+    review=str(input("do you want to give review for service_provider: "))
+    if review=='yes':
+        check_review=completion_details()
+        check_review.review_details()
